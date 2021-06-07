@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -14,36 +14,38 @@ import axios from 'axios';
 
 
 
+
 export default function Points() {
 
-    let [pontos, setPontos] = useState([]);
-    let dados;
-
-    useEffect(()=>{
-
-    alert("Entrou no UseEffect");
-
-    
-
-   async function loadPontos(){
-        const resultado = await axios.get('http://192.168.0.111/api-produtos/listar-produtos.php');
-        
-        dados = resultado;
-        //setLocal(dados);
-        var array = Object.keys(dados).map(i => JSON.parse(json[Number(i)]));
-        
-        
-       for(var i =0; i < array.length; i++){
-        
-       }
-        
-    } 
+    let [dados, setDados] = useState([]);
 
 
-    loadPontos();
+    useEffect(() => {
+
+        alert("Entrou no UseEffect");
 
 
-},[]);
+
+        async function loadPontos() {
+            const resultado = await axios.get('http://192.168.0.111/api-produtos/listar-produtos.php');
+
+            setDados(resultado.data);
+
+            dados.map((item) => {
+                console.log(item.latitude);
+            });
+
+
+
+
+
+        }
+
+
+        loadPontos();
+
+
+    }, []);
 
 
     navigation = useNavigation();
@@ -54,7 +56,7 @@ export default function Points() {
 
 
     //Navega para tela de Detalhes
-    function abreTelaDetalhes(){
+    function abreTelaDetalhes() {
         navigation.navigate('Detail');
     }
 
@@ -80,20 +82,24 @@ export default function Points() {
 
                     >
 
-                        <Marker 
-                            onPress={abreTelaDetalhes}
-                            style={styles.mapMarker}
-                            coordinate={{
-                                latitude: -23.403935546979575,
-                                longitude: -46.855812571557905,
+                        {dados.map(item => (
+                            <Marker
+                                key={item.id}
+                                onPress={abreTelaDetalhes}
+                                style={styles.mapMarker}
+                                coordinate={{
+                                    latitude: Number(item.latitude),
+                                    longitude: Number(item.longitude)
 
-                            }}
-                        >
-                            <View style={styles.mapMarkerContainer}>
-                                <Image style={styles.mapMarkerImage} source={{ uri: 'https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg' }} />
-                                <Text style={styles.mapMarkerTitle}>Donos da pizza</Text>
-                            </View>
-                        </Marker>
+                                }}
+                            >
+                                <View style={styles.mapMarkerContainer}>
+                                    <Image style={styles.mapMarkerImage} source={{ uri:item.foto}} />
+                                    <Text style={styles.mapMarkerTitle}>{item.nome}</Text>
+                                </View>
+                            </Marker>
+                        ))}
+
 
 
                     </MapView>

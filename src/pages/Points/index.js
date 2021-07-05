@@ -12,7 +12,7 @@ import MapView, { Marker } from 'react-native-maps';
 //importando a api
 import axios from 'axios';
 
-
+console.disableYellowBox =true;
 
 
 export default function Points() {
@@ -20,27 +20,19 @@ export default function Points() {
     let [dados, setDados] = useState([]);
 
 
+    async function loadPontos() {
+        const resultado = await axios.get('http://192.168.0.111/api-produtos/listar-produtos.php');
+
+        setDados(resultado.data);
+
+       //dados.map((item) => {
+         //   console.log(item.latitude);
+        //});
+    }
+
+
     useEffect(() => {
-
-        alert("Entrou no UseEffect");
-
-
-
-        async function loadPontos() {
-            const resultado = await axios.get('http://192.168.0.111/api-produtos/listar-produtos.php');
-
-            setDados(resultado.data);
-
-            dados.map((item) => {
-                console.log(item.latitude);
-            });
-
-
-
-
-
-        }
-
+        alert("Entrou no UseEffect");     
 
         loadPontos();
 
@@ -56,8 +48,8 @@ export default function Points() {
 
 
     //Navega para tela de Detalhes
-    function abreTelaDetalhes() {
-        navigation.navigate('Detail');
+    function abreTelaDetalhes(id) {
+        navigation.navigate('Detail',{id: id});
     }
 
     return (
@@ -85,7 +77,7 @@ export default function Points() {
                         {dados.map(item => (
                             <Marker
                                 key={item.id}
-                                onPress={abreTelaDetalhes}
+                                onPress={() => abreTelaDetalhes(item.id)}
                                 style={styles.mapMarker}
                                 coordinate={{
                                     latitude: Number(item.latitude),

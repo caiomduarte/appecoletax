@@ -1,34 +1,85 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
 
-export default function Detail() {
+import axios from 'axios';
+
+export default function Detail({route}) {
 
   navigation = useNavigation();
+  let[pontos, setPontos] = useState([]);
+
+  console.log(route.params?.id);
 
   function voltaTela() {
     navigation.goBack();
   }
 
 
+ useEffect(()=>{
+
+  alert('entrou no useEffect');
+ 
+  async function carregaPontoPorId() {
+
+    
+   
+    const resultado = await axios.get(`http://192.168.0.111/api-ecoleta/lista-porid.php?id=${route.params?.id}`);
+
+    setPontos(resultado.data);
+
+    //console.log(pontos.data);
+    pontos.map((item) => {
+        console.log(item.nome);
+    });
+
+
+    console.log(pontos.nome);
+
+}
+
+
+carregaPontoPorId();
+
+
+
+
+ },[]);
+
+
+
+
   return (
-    <SafeAreaView style={{flex:1}}>
+    
+   pontos.map(item => (
+  
+  <SafeAreaView style={{flex:1}}>
+    
       <View style={styles.container}>
         <TouchableOpacity onPress={voltaTela}>
           <Feather name="arrow-left" size={20} color="#34cb79" />
         </TouchableOpacity>
 
-        <Image style={styles.pointImage} source={{ uri: 'https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg' }} />
-        <Text style={styles.pointName}>Pizzaria Donos da Pizza</Text>
+  
+     
+
+     
+       <Image style={styles.pointImage} source={{ uri: item.foto }} />
+        <Text style={styles.pointName}>{item.nome}</Text>
         <Text style={styles.pointItems}>Papelão e Óleo de cozinha</Text>
+
+    
+  
 
         <View style={styles.addressContent}>
           <Text style={styles.addressTitle}>Endereço</Text>
-          <Text style={styles.addressContent}>Av Portal dos Ipês n° 133, Polvilho, Cajamar - SP</Text>
+          <Text style={styles.addressContent}>{item.endereco}</Text>
+          <Text style={styles.addressContent}>{item.cidade}</Text>
         </View>
-
+         
+       
       </View>
 
 
@@ -43,12 +94,14 @@ export default function Detail() {
           <Text style={styles.buttonText}>E-mail</Text>
         </RectButton>
 
-
+      
       </View>
+      
 
 
-
+    
     </SafeAreaView>
+    ))
   );
 }
 
